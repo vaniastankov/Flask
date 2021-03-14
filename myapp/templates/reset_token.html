@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block content %} 
+<div class = "content-section">
+<form action="" method="post" id = "registration_form">
+    {{form.hidden_tag() }}
+    <fieldset class="form-group">  
+
+        <legend class = "border-bottom md4"> Regster </legend>
+        {% for field in form if field.name != "csrf_token" and field.name!="submit" %}
+        <div class = "form-group"> 
+        {{ field.label(class = "form-control-label") }}
+        {{ field(class = "form-control form-control-lg") }}
+             <div>
+            {% for error in field.errors %}
+               {{ error }}
+            {% endfor %}
+                 </div>
+        </div>
+    {% endfor %}
+<br>
+            <div class = "form-group border-bottom md4">
+        {{form.submit(class = " btn btn-md btn-outline-info")}}
+        </div>
+        </fieldset>
+</form>
+        <small class="text-muted">
+            Have an Account? <a class = "ml-2" href = "{{url_for('login')}}" >Sign In</a>
+
+        </small>
+</div>
+{% endblock content %}

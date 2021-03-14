@@ -1,0 +1,163 @@
+{% extends "layout.html" %}
+{% block resources%}
+<script type='text/javascript'>
+    var device_count = 0;
+
+    function imageView() {
+        const preview = document.querySelector('img');
+        const file = document.querySelector('input[type=file]').files[0];
+        const reader = new FileReader();
+
+        reader.addEventListener("load", function () {
+            // convert image file to base64 string
+            preview.src = reader.result;
+        }, false);
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    };
+
+    function addDevice(id) {
+        device_count = document.getElementById("tech").childElementCount - 2;
+        var intid = parseInt(id.replace('device', ''));
+        intid = intid || 0;
+        if (intid == device_count) {
+            device_count += 1;
+            var dev = document.getElementById("device").cloneNode(true);
+            var ddev = document.getElementById("device_description").cloneNode(true);
+            dev.setAttribute("id", dev.id + device_count);
+            dev.setAttribute("name", dev.name + device_count);
+            ddev.setAttribute("id", ddev.id + device_count);
+            ddev.setAttribute("name", ddev.name + device_count);
+            ddev.removeAttribute("required");
+            dev.removeAttribute("required");
+            ddev.value = "";
+            dev.value = "";
+            var column1 = document.createElement("div");
+            column1.setAttribute("class", "form-group col-md-6");
+            var column2 = column1.cloneNode(true);
+            column1.appendChild(dev);
+            column2.appendChild(ddev);
+            var whole_column = document.createElement("div");
+            whole_column.setAttribute("class", "row");
+            whole_column.setAttribute("id", "device_row" + device_count);
+            whole_column.appendChild(column1);
+            whole_column.appendChild(column2);
+            var place = document.getElementById("tech");
+            place.insertBefore(whole_column, document.getElementById("tech_notes_row"));
+        }
+        else {
+            if (intid > device_count) {
+                device_count = intid
+            }
+        }
+    }
+</script>
+{% endblock resources%}
+{% block content %}
+<form method="post" action="" id="main_form" enctype="multipart/form-data">
+    {{ form.csrf_token() }}
+    <fieldset class="form-group" id="general">
+        <div class="row" id="gen">
+            <div class="form-group col-md-4">
+                {% if pic %}
+                <img src="data:image/png;base64,{{pic}}" class="rounded float-left" height="200" width="150"  alt="Image preview...">
+                <!--<img src="{{pic}}" class="rounded float-left" height="200" width="150"
+                    alt="Image preview..."> -->
+                {% else %}
+                <img src="" class="rounded float-left " height="200" width="150">
+                {% endif %}
+                
+                <div class="form-group">
+                    <br>
+                    {{form.picture(class="form-control mb-2") }}
+                    {{form.usepicture(class = "form-check-input mb-2")}}
+                    {{form.usepicture.label(class = "form-check-label mb-2")}}
+                </div>
+
+            </div>
+            <div class="form-group col-md-4">
+                Artist<br>
+                {{form.name(class = "form-control mb-4") }}
+                {{form.phone(class = "form-control mb-4") }}
+                {{form.email(class = "form-control mb-4") }}
+
+            </div>
+            <div class="form-group col-md-4">
+                Agent<br>
+                {{form.aname(class = "form-control mb-4") }}
+                {{form.aphone(class = "form-control mb-4") }}
+                {{form.aemail(class = "form-control mb-4") }}
+            </div>
+        </div>
+    </fieldset>
+
+
+    <label for="tech">Tech</label>
+    <fieldset class="form-group" id="tech">
+        <div class="row" id="device_row">
+            <div class="form-group col-md-6">
+                {{form.device(class = "form-control mb-2", value = dev[0]) }}
+            </div>
+            <div class="form-group col-md-6">
+                {{form.device_description(class = "form-control mb-2", value = des[0]) }}
+            </div>
+        </div>
+        {%if dev and des %}
+        {%for device, description in zip(dev[1:],des[1:]) %}
+        {% set i = loop.index%}
+        <div class="row" id="device_row{{i}}">
+            <div class="form-group col-md-6">
+                <input class="form-control mb-2" id="device{{i}}" name="device{{i}}" onmouseup="addDevice(this.id)"
+                    placeholder="Device Name" value="{{device}}">
+            </div>
+            <div class="form-group col-md-6">
+                <input class="form-control mb-2" id="device_description{{i}}" name="device_description{{i}}"
+                    placeholder="Device Notes" type="text" value="{{description}}">
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="row" id="device_row0">
+            <div class="form-group col-md-6">
+                <input class="form-control mb-2" id="device1" name="device1" onmouseup="addDevice(this.id)"
+                    placeholder="Device Name" value="">
+            </div>
+            <div class="form-group col-md-6">
+                <input class="form-control mb-2" id="device_description1" name="device_description1"
+                    placeholder="Device Notes" type="text" value="">
+            </div>
+        </div>
+
+        {% endif %}
+        <div class="row" id="tech_notes_row">
+            <div class="form-group col-md-12">
+                {{form.t(class = "form-control mb-2") }}
+            </div>
+        </div>
+    </fieldset>
+    <label for="hospitality">Hospitality</label>
+    <fieldset class="form-group" id="hospitality">
+        <div class="row" id="haa">
+            <div class="form-group col-md-12">
+                {{form.h(class = "form-control mb-2") }}
+            </div>
+        </div>
+    </fieldset>
+    <label for="pay">Pay and Important Notes</label>
+    <fieldset class="form-group" id="pay">
+        <div class="row" id="fma">
+            <div class="form-group col-md-12">
+                {{form.p(class = "form-control mb-2") }}
+            </div>
+        </div>
+    </fieldset>
+    <div class="form-group">
+        {{ form.submit(class="btn btn-outline-info mb-2") }}
+    </div>
+
+
+
+
+</form>
+{% endblock content %}

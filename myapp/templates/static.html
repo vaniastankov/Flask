@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% for data in data %}
+        <h1 style = "word-break: normal; white-space: pre-wrap;">{{data.title}}</h1>
+       {%if data.date%}
+        <p style = "word-break: normal; white-space: pre-wrap;">{{data.date}} </p>
+        {%endif%}
+        <p style = "word-break: normal; white-space: pre-wrap;">{{data.contents}}</p>
+    {% endfor %}
+{% endblock content %}
